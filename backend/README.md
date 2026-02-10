@@ -18,13 +18,13 @@ First, create the PostgreSQL database and apply the schema:
 
 ```bash
 # Connect to PostgreSQL
-psql -U 23CS10051 -d postgres
+psql -U username -d postgres
 
 # Create database
-CREATE DATABASE "Premidsem";
+CREATE DATABASE "schema";
 
 # Connect to the database
-\c Premidsem
+\c schema
 
 # Apply schema (run from project root)
 \i database/schema.sql
