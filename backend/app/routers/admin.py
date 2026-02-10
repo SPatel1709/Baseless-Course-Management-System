@@ -298,136 +298,136 @@ async def create_course(course: CourseCreate):
             detail=f"Database error: {str(e)}"
         )
 
-@router.put("/course/{course_id}", response_model=MessageResponse)
-async def update_course(course_id: int, course: CourseUpdate):
-    """Update a course"""
-    try:
-        with get_db_cursor() as cursor:
-            # Check if course exists
-            cursor.execute("SELECT Course_id FROM Course WHERE Course_id = %s", (course_id,))
-            if not cursor.fetchone():
-                raise HTTPException(
-                    status_code=status.HTTP_404_NOT_FOUND,
-                    detail="Course not found"
-                )
+# @router.put("/course/{course_id}", response_model=MessageResponse)
+# async def update_course(course_id: int, course: CourseUpdate):
+#     """Update a course"""
+#     try:
+#         with get_db_cursor() as cursor:
+#             # Check if course exists
+#             cursor.execute("SELECT Course_id FROM Course WHERE Course_id = %s", (course_id,))
+#             if not cursor.fetchone():
+#                 raise HTTPException(
+#                     status_code=status.HTTP_404_NOT_FOUND,
+#                     detail="Course not found"
+#                 )
             
-            # Build dynamic update query
-            update_fields = []
-            params = []
+#             # Build dynamic update query
+#             update_fields = []
+#             params = []
             
-            if course.name is not None:
-                update_fields.append("Name = %s")
-                params.append(course.name)
-            if course.price is not None:
-                update_fields.append("Price = %s")
-                params.append(course.price)
-            if course.duration is not None:
-                update_fields.append("Duration = %s")
-                params.append(course.duration)
-            if course.course_type is not None:
-                update_fields.append("Course_Type = %s")
-                params.append(course.course_type)
-            if course.difficulty_level is not None:
-                update_fields.append("Difficulty_level = %s")
-                params.append(course.difficulty_level)
-            if course.notes_url is not None:
-                update_fields.append("Notes_URL = %s")
-                params.append(course.notes_url)
-            if course.video_url is not None:
-                update_fields.append("Video_URL = %s")
-                params.append(course.video_url)
-            if course.book_id is not None:
-                # Verify book exists
-                cursor.execute("SELECT Book_id FROM Book WHERE Book_id = %s", (course.book_id,))
-                if not cursor.fetchone():
-                    raise HTTPException(
-                        status_code=status.HTTP_404_NOT_FOUND,
-                        detail="Book not found"
-                    )
-                update_fields.append("Book_id = %s")
-                params.append(course.book_id)
-            if course.uni_id is not None:
-                # Verify university exists
-                cursor.execute("SELECT Uni_id FROM University WHERE Uni_id = %s", (course.uni_id,))
-                if not cursor.fetchone():
-                    raise HTTPException(
-                        status_code=status.HTTP_404_NOT_FOUND,
-                        detail="University not found"
-                    )
-                update_fields.append("Uni_id = %s")
-                params.append(course.uni_id)
+#             if course.name is not None:
+#                 update_fields.append("Name = %s")
+#                 params.append(course.name)
+#             if course.price is not None:
+#                 update_fields.append("Price = %s")
+#                 params.append(course.price)
+#             if course.duration is not None:
+#                 update_fields.append("Duration = %s")
+#                 params.append(course.duration)
+#             if course.course_type is not None:
+#                 update_fields.append("Course_Type = %s")
+#                 params.append(course.course_type)
+#             if course.difficulty_level is not None:
+#                 update_fields.append("Difficulty_level = %s")
+#                 params.append(course.difficulty_level)
+#             if course.notes_url is not None:
+#                 update_fields.append("Notes_URL = %s")
+#                 params.append(course.notes_url)
+#             if course.video_url is not None:
+#                 update_fields.append("Video_URL = %s")
+#                 params.append(course.video_url)
+#             if course.book_id is not None:
+#                 # Verify book exists
+#                 cursor.execute("SELECT Book_id FROM Book WHERE Book_id = %s", (course.book_id,))
+#                 if not cursor.fetchone():
+#                     raise HTTPException(
+#                         status_code=status.HTTP_404_NOT_FOUND,
+#                         detail="Book not found"
+#                     )
+#                 update_fields.append("Book_id = %s")
+#                 params.append(course.book_id)
+#             if course.uni_id is not None:
+#                 # Verify university exists
+#                 cursor.execute("SELECT Uni_id FROM University WHERE Uni_id = %s", (course.uni_id,))
+#                 if not cursor.fetchone():
+#                     raise HTTPException(
+#                         status_code=status.HTTP_404_NOT_FOUND,
+#                         detail="University not found"
+#                     )
+#                 update_fields.append("Uni_id = %s")
+#                 params.append(course.uni_id)
             
-            # Update course basic info
-            if update_fields:
-                params.append(course_id)
-                query = f"UPDATE Course SET {', '.join(update_fields)} WHERE Course_id = %s"
-                cursor.execute(query, params)
+#             # Update course basic info
+#             if update_fields:
+#                 params.append(course_id)
+#                 query = f"UPDATE Course SET {', '.join(update_fields)} WHERE Course_id = %s"
+#                 cursor.execute(query, params)
             
-            # Update prerequisites if provided
-            if course.prerequisite_course_ids is not None:
-                # Verify all prerequisite courses exist
-                for prereq_id in course.prerequisite_course_ids:
-                    cursor.execute("SELECT Course_id FROM Course WHERE Course_id = %s", (prereq_id,))
-                    if not cursor.fetchone():
-                        raise HTTPException(
-                            status_code=status.HTTP_404_NOT_FOUND,
-                            detail=f"Prerequisite course with ID {prereq_id} not found"
-                        )
+#             # Update prerequisites if provided
+#             if course.prerequisite_course_ids is not None:
+#                 # Verify all prerequisite courses exist
+#                 for prereq_id in course.prerequisite_course_ids:
+#                     cursor.execute("SELECT Course_id FROM Course WHERE Course_id = %s", (prereq_id,))
+#                     if not cursor.fetchone():
+#                         raise HTTPException(
+#                             status_code=status.HTTP_404_NOT_FOUND,
+#                             detail=f"Prerequisite course with ID {prereq_id} not found"
+#                         )
                 
-                # Check for circular dependencies
-                for prereq_id in course.prerequisite_course_ids:
-                    if check_circular_dependency(cursor, course_id, prereq_id):
-                        raise HTTPException(
-                            status_code=status.HTTP_400_BAD_REQUEST,
-                            detail=f"Adding prerequisite {prereq_id} creates a circular dependency"
-                        )
+#                 # Check for circular dependencies
+#                 for prereq_id in course.prerequisite_course_ids:
+#                     if check_circular_dependency(cursor, course_id, prereq_id):
+#                         raise HTTPException(
+#                             status_code=status.HTTP_400_BAD_REQUEST,
+#                             detail=f"Adding prerequisite {prereq_id} creates a circular dependency"
+#                         )
                 
-                # Remove old prerequisites
-                cursor.execute(
-                    "DELETE FROM Course_Prerequisites WHERE Course_id = %s",
-                    (course_id,)
-                )
+#                 # Remove old prerequisites
+#                 cursor.execute(
+#                     "DELETE FROM Course_Prerequisites WHERE Course_id = %s",
+#                     (course_id,)
+#                 )
                 
-                # Add new prerequisites
-                for prereq_id in course.prerequisite_course_ids:
-                    cursor.execute(
-                        """
-                        INSERT INTO Course_Prerequisites (Course_id, Prerequisite_Course_id)
-                        VALUES (%s, %s)
-                        """,
-                        (course_id, prereq_id)
-                    )
+#                 # Add new prerequisites
+#                 for prereq_id in course.prerequisite_course_ids:
+#                     cursor.execute(
+#                         """
+#                         INSERT INTO Course_Prerequisites (Course_id, Prerequisite_Course_id)
+#                         VALUES (%s, %s)
+#                         """,
+#                         (course_id, prereq_id)
+#                     )
             
-            # Update topics if provided
-            if course.topic_ids is not None:
-                if len(course.topic_ids) == 0:
-                    raise HTTPException(
-                        status_code=status.HTTP_400_BAD_REQUEST,
-                        detail="Course must have at least one topic"
-                    )
+#             # Update topics if provided
+#             if course.topic_ids is not None:
+#                 if len(course.topic_ids) == 0:
+#                     raise HTTPException(
+#                         status_code=status.HTTP_400_BAD_REQUEST,
+#                         detail="Course must have at least one topic"
+#                     )
                 
-                # Remove old topics
-                cursor.execute(
-                    "DELETE FROM Course_Topic WHERE Course_id = %s",
-                    (course_id,)
-                )
+#                 # Remove old topics
+#                 cursor.execute(
+#                     "DELETE FROM Course_Topic WHERE Course_id = %s",
+#                     (course_id,)
+#                 )
                 
-                # Add new topics
-                for topic_id in course.topic_ids:
-                    cursor.execute(
-                        "INSERT INTO Course_Topic (Course_id, Topic_id) VALUES (%s, %s)",
-                        (course_id, topic_id)
-                    )
+#                 # Add new topics
+#                 for topic_id in course.topic_ids:
+#                     cursor.execute(
+#                         "INSERT INTO Course_Topic (Course_id, Topic_id) VALUES (%s, %s)",
+#                         (course_id, topic_id)
+#                     )
             
-            return MessageResponse(message="Course updated successfully")
+#             return MessageResponse(message="Course updated successfully")
     
-    except HTTPException:
-        raise
-    except Exception as e:
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Database error: {str(e)}"
-        )
+#     except HTTPException:
+#         raise
+#     except Exception as e:
+#         raise HTTPException(
+#             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+#             detail=f"Database error: {str(e)}"
+#         )
 
 @router.get("/courses")
 async def get_all_courses():
@@ -707,6 +707,12 @@ async def get_all_instructors():
                 GROUP BY i.Instructor_id, i.Name, i.Email
                 ORDER BY i.Name
             """)
+
+            """Udi baba. this Array_AGG is psql aggregrate function that collects
+              all the expertise areas for one instructor in single array.
+
+              Samje e ka hovat hai bete.   
+             """
             results = cursor.fetchall()
             return [
                 {
