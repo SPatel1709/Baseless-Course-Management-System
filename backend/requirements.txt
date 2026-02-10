@@ -1,0 +1,7 @@
+fastapi==0.109.0
+uvicorn[standard]==0.27.0
+pydantic[email]==2.5.3
+psycopg2-binary==2.9.9
+bcrypt==4.1.2
+python-multipart==0.0.6
+sshtunnel==0.4.0
