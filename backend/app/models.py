@@ -1,4 +1,4 @@
-from pydantic import BaseModel, EmailStr, Field, validator
+from pydantic import BaseModel, EmailStr, Field, field_validator
 from typing import Optional, List
 from datetime import date
 from decimal import Decimal
@@ -18,7 +18,7 @@ class StudentCreate(BaseModel):
     country: str = Field(..., max_length=100)
     skill_level: str
     
-    @validator('skill_level')
+    @field_validator('skill_level')
     def validate_skill_level(cls, v):
         if v not in ['Beginner', 'Intermediate', 'Advanced']:
             raise ValueError('Invalid skill level')
@@ -30,7 +30,7 @@ class InstructorCreate(BaseModel):
     name: str = Field(..., max_length=255)
     expertise_areas: List[str] = Field(..., max_items=20)
     
-    @validator('expertise_areas')
+    @field_validator('expertise_areas')
     def validate_expertise(cls, v):
         for area in v:
             if len(area) > 255:
@@ -53,7 +53,7 @@ class BookCreate(BaseModel):
     isbn: Optional[str] = Field(None, max_length=20)
     authors: List[str] = Field(..., min_items=1)
     
-    @validator('authors')
+    @field_validator('authors')
     def validate_authors(cls, v):
         for author in v:
             if len(author) > 255:
@@ -74,13 +74,13 @@ class CourseCreate(BaseModel):
     prerequisite_course_ids: List[int] = []
     topic_names: List[str] = Field(..., min_items=1)  # Changed from topic_ids to topic_names
     
-    @validator('course_type')
+    @field_validator('course_type')
     def validate_course_type(cls, v):
         if v not in ['Diploma', 'Degree', 'Certificate']:
             raise ValueError('Invalid course type')
         return v
     
-    @validator('difficulty_level')
+    @field_validator('difficulty_level')
     def validate_difficulty(cls, v):
         if v not in ['Beginner', 'Intermediate', 'Advanced']:
             raise ValueError('Invalid difficulty level')
@@ -111,7 +111,7 @@ class StudentProfileUpdate(BaseModel):
     country: Optional[str] = Field(None, max_length=100)
     skill_level: Optional[str] = None
     
-    @validator('skill_level')
+    @field_validator('skill_level')
     def validate_skill_level(cls, v):
         if v and v not in ['Beginner', 'Intermediate', 'Advanced']:
             raise ValueError('Invalid skill level')
@@ -135,7 +135,7 @@ class InstructorProfileUpdate(BaseModel):
     name: Optional[str] = Field(None, max_length=255)
     expertise_areas: Optional[List[str]] = None
     
-    @validator('expertise_areas')
+    @field_validator('expertise_areas')
     def validate_expertise(cls, v):
         if v:
             for area in v:
@@ -155,7 +155,7 @@ class EvaluateStudent(BaseModel):
     evaluation_score: Decimal = Field(..., ge=0, le=100)
     status: str
     
-    @validator('status')
+    @field_validator('status')
     def validate_status(cls, v):
         if v not in ['Pending', 'Completed']:
             raise ValueError('Invalid status')

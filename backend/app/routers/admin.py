@@ -25,37 +25,38 @@ async def add_university(university: UniversityCreate):
             detail=f"Database error: {str(e)}"
         )
 
-@router.delete("/university/{uni_id}", response_model=MessageResponse)
-async def remove_university(uni_id: int):
-    """Remove a partner university"""
-    try:
-        with get_db_cursor() as cursor:
-            # Check if university has courses
-            cursor.execute(
-                "SELECT COUNT(*) FROM Course WHERE Uni_id = %s",
-                (uni_id,)
-            )
-            count = cursor.fetchone()[0]
-            if count > 0:
-                raise HTTPException(
-                    status_code=status.HTTP_400_BAD_REQUEST,
-                    detail="Cannot delete university with associated courses"
-                )
+# Remove university not used 
+# @router.delete("/university/{uni_id}", response_model=MessageResponse)
+# async def remove_university(uni_id: int):
+#     """Remove a partner university"""
+#     try:
+#         with get_db_cursor() as cursor:
+#             # Check if university has courses
+#             cursor.execute(
+#                 "SELECT COUNT(*) FROM Course WHERE Uni_id = %s",
+#                 (uni_id,)
+#             )
+#             count = cursor.fetchone()[0]
+#             if count > 0:
+#                 raise HTTPException(
+#                     status_code=status.HTTP_400_BAD_REQUEST,
+#                     detail="Cannot delete university with associated courses"
+#                 )
             
-            cursor.execute("DELETE FROM University WHERE Uni_id = %s", (uni_id,))
-            if cursor.rowcount == 0:
-                raise HTTPException(
-                    status_code=status.HTTP_404_NOT_FOUND,
-                    detail="University not found"
-                )
-            return MessageResponse(message="University removed successfully")
-    except HTTPException:
-        raise
-    except Exception as e:
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Database error: {str(e)}"
-        )
+#             cursor.execute("DELETE FROM University WHERE Uni_id = %s", (uni_id,))
+#             if cursor.rowcount == 0:
+#                 raise HTTPException(
+#                     status_code=status.HTTP_404_NOT_FOUND,
+#                     detail="University not found"
+#                 )
+#             return MessageResponse(message="University removed successfully")
+#     except HTTPException:
+#         raise
+#     except Exception as e:
+#         raise HTTPException(
+#             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+#             detail=f"Database error: {str(e)}"
+#         )
 
 @router.get("/universities")
 async def get_all_universities():

@@ -26,7 +26,7 @@ async def lifespan(app: FastAPI):
 
 # Create FastAPI application
 app = FastAPI(
-    title="Online Course Management Platform",
+    title="Baseless Course Management System",
     description="A comprehensive web-based system for managing online courses, instructors, students, and analytics",
     version="1.0.0",
     lifespan=lifespan
