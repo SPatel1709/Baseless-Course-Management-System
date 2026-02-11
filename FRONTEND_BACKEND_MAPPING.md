@@ -6,18 +6,18 @@ This document provides a complete mapping of how the frontend connects to the ba
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
-│                         FRONTEND (Next.js)                       │
-│                     http://localhost:3000                        │
+│                         FRONTEND (Next.js)                      │
+│                     http://localhost:3000                       │
 ├─────────────────────────────────────────────────────────────────┤
-│  Pages (src/app/*)                                               │
-│  ├── login/page.tsx                                              │
-│  ├── register/page.tsx                                           │
-│  ├── admin/page.tsx                                              │
-│  ├── student/page.tsx                                            │
-│  ├── instructor/page.tsx                                         │
-│  └── analyst/page.tsx                                            │
-│                                                                   │
-│  API Client (src/lib/api.ts)                                     │
+│  Pages (src/app/*)                                              │
+│  ├── login/page.tsx                                             │
+│  ├── register/page.tsx                                          │
+│  ├── admin/page.tsx                                             │
+│  ├── student/page.tsx                                           │
+│  ├── instructor/page.tsx                                        │
+│  └── analyst/page.tsx                                           │
+│                                                                 │
+│  API Client (src/lib/api.ts)                                    │
 │  └── apiRequest() wrapper + role-based API objects              │
 └───────────────────────────┬─────────────────────────────────────┘
                             │
@@ -25,19 +25,19 @@ This document provides a complete mapping of how the frontend connects to the ba
                             │ JSON format
                             │
 ┌───────────────────────────▼─────────────────────────────────────┐
-│                      BACKEND (FastAPI)                           │
-│                     http://localhost:8000                        │
+│                      BACKEND (FastAPI)                          │
+│                     http://localhost:8000                       │
 ├─────────────────────────────────────────────────────────────────┤
-│  Main App (app/main.py)                                          │
+│  Main App (app/main.py)                                         │
 │  ├── CORS: allows localhost:3000, localhost:3001                │
-│  └── Routers:                                                    │
+│  └── Routers:                                                   │
 │      ├── /auth → routers/auth.py                                │
 │      ├── /admin → routers/admin.py                              │
 │      ├── /student → routers/student.py                          │
 │      ├── /instructor → routers/instructor.py                    │
 │      └── /analyst → routers/analyst.py                          │
-│                                                                   │
-│  Database (database.py)                                          │
+│                                                                 │
+│  Database (database.py)                                         │
 │  └── PostgreSQL connection pool                                 │
 └─────────────────────────────────────────────────────────────────┘
 ```
